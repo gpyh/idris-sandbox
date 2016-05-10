@@ -126,3 +126,11 @@ Can't define hole Ex6_3_8.case block in Ex6_3_8.interactiveInsert, processInput 
 t depends on other holes          
 ----
 
+=== Type synonyms don't appear in type signatures
+
+If I use a type synonym (a function of type `Type`) in a signature
+and then ask for the type of the definition, the computed type.
+This is sensible, but hardly usable. The main uses of type synonyms are giving
+meaning to types and simplifying the type signatures. We can't take
+advantage of this when doing interactive editing.
+
