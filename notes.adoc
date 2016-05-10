@@ -1,0 +1,128 @@
+== Issues
+:sectnum:
+
+=== Maybe low-hanging fruits
+
+- `Can't find import <module>` should be `Can't find module <module>` ?
+- `:module` in the REPL brings everything in scope, including private entities.
+This calls for an `:import` directive similar to the `import` in an Idris module.
+Or at least a way to quickly see what's private and what's not.
+
+=== Mutuality around an interface
+
+Consider this: 
+
+[source, idris]
+----
+interface MyInterface a where
+  bar : a -> b
+  bar : ?bar_rhs
+  foo : a -> b
+  foo = bar
+----
+
+`foo` depends on `bar`. They both provide a default implementation
+and depend on the type of the implementation.
+
+An implementation can override `foo`, which is fine, but I don't want
+`bar` to be overridden. I need it outside of the interface.
+
+In Haskell, I would do something akin to this:
+
+[source, idris]
+----
+bar : MyInterface a => a -> b
+bar : ?bar_rhs
+
+interface MyInterface a where
+  foo : a -> b
+  foo = bar
+----
+
+Problem is, the order is messed up because bar depends on MyInterface.
+
+Symmetrically:
+
+[source, idris]
+----
+interface MyInterface a where
+  foo : a -> b
+  foo = bar
+
+bar : MyInterface a => a -> b
+bar : ?bar_rhs
+----
+
+The dependency on `bar` makes it flawed.
+
+How should I proceed?
+
+=== Interactive editing
+
+==== Lemmata
+
+Creating a lemma uses the whole scope to fetch arguments.
+Worse, if some are already there it adds them anyway.
+
+Maybe it should look at the intended type and leave new holes behind.
+Example:
+
+[source, idris]
+----
+foo : a -> b -> c
+foo x = ?bar
+----
+
+`bar` is of type `a -> b -> c`. Creating a simple lemme would do:
+
+[source, idris]
+----
+bar : a -> b -> c
+
+foo : a -> b -> c
+foo x = bar ?arg1 ?arg2
+----
+
+Going further, let's have:
+
+[source, idris]
+----
+foo : a -> b -> c
+foo x = ?bar x
+----
+
+Because x of type a, this could expand as:
+
+[source, idris]
+----
+bar : a -> b -> c
+
+foo : a -> b -> c
+foo x = bar x ?arg1
+----
+
+==== Definitions in interfaces
+
+Can't make an automatic definition of a function in an interface's `where` clause.
+
+=== Empty data should be fine
+
+[source, idris]
+----
+data Foo
+
+bar : a -> a
+----
+
+Syntax error in `:`
+
+=== Can't use multiple holes sometimes
+
+I don't understand this:
+
+[source, idris]
+----
+Can't define hole Ex6_3_8.case block in Ex6_3_8.interactiveInsert, processInput at /home/gpyh/idris-exercises/src/Ex6_3_8.idr:84:10 as i
+t depends on other holes          
+----
+
