@@ -1,0 +1,5 @@
+package exercises
+
+sourcedir = src
+modules = Ex5_3_5
+opts = "-p effects -p contrib" 
