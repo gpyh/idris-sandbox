@@ -1,0 +1,20 @@
+- What is the type theory behind Idris? How does it compare to HoTT?
+
+- A database of proofs: http://us.metamath.org/
+Converting those in Idris?
+- Can proofs be used by a compiler to optimize code?
+
+- How does Idris lay out things in memory? Is it predictable?
+- Haskell's UNPACK?
+
+== Self hosting
+
+- How would the compiler be bootstrapped?
+- Which libraries need to be implemented first?
+- Can it be partially self-hosted?
+
+Answered at the end of the elaboration paper.
+
+== Misc
+
+- The executor needs some work
