@@ -1,14 +1,16 @@
-== Issues
+= Issues
 :sectnum:
 
-=== Maybe low-hanging fruits
+== Maybe low-hanging fruits
 
 - `Can't find import <module>` should be `Can't find module <module>` ?
+
 - `:module` in the REPL brings everything in scope, including private entities.
 This calls for an `:import` directive similar to the `import` in an Idris module.
-Or at least a way to quickly see what's private and what's not.
+Or at least a way to quickly see what's private and what's not. UPDATE: Asked
+christiansen about it. The absence of this feature is a matter of priorities.
 
-=== Mutuality around an interface
+== Mutuality around an interface
 
 Consider this: 
 
@@ -57,9 +59,9 @@ The dependency on `bar` makes it flawed.
 
 How should I proceed?
 
-=== Interactive editing
+== Interactive editing
 
-==== Lemmata
+=== Lemmata
 
 Creating a lemma uses the whole scope to fetch arguments.
 Worse, if some are already there it adds them anyway.
@@ -101,11 +103,11 @@ foo : a -> b -> c
 foo x = bar x ?arg1
 ----
 
-==== Definitions in interfaces
+=== Definitions in interfaces
 
 Can't make an automatic definition of a function in an interface's `where` clause.
 
-=== Empty data should be fine
+== Empty data should be fine
 
 [source, idris]
 ----
@@ -116,7 +118,7 @@ bar : a -> a
 
 Syntax error in `:`
 
-=== Can't use multiple holes sometimes
+== Can't use multiple holes sometimes
 
 I don't understand this:
 
@@ -126,11 +128,17 @@ Can't define hole Ex6_3_8.case block in Ex6_3_8.interactiveInsert, processInput 
 t depends on other holes          
 ----
 
-=== Type synonyms don't appear in type signatures
+== Type synonyms don't appear in type signatures
 
 If I use a type synonym (a function of type `Type`) in a signature
 and then ask for the type of the definition, the computed type.
 This is sensible, but hardly usable. The main uses of type synonyms are giving
 meaning to types and simplifying the type signatures. We can't take
 advantage of this when doing interactive editing.
+
+== Integral methods allow division by zero
+
+I took a look at `Prelude.Interfaces` and implementations if the `div` method
+don't handle the divide-by-zero case. How can this be prevented?
+I guess it is a very complicated issue.
 
