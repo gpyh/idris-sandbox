@@ -1,0 +1,4 @@
+- Type-driven development with Idris
+https://www.manning.com/books/type-driven-development-with-idris
+- Galois 2015
+https://github.com/david-christiansen/IdrisAtGalois2015
