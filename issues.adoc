@@ -107,6 +107,12 @@ foo x = bar x ?arg1
 
 Can't make an automatic definition of a function in an interface's `where` clause.
 
+=== Case on tuples
+
+Say I have a type `(Int, Int, Int)`. If a case split on a variable of this
+type, I get `(a, b)`. I'd like to have `(a, b, c)` instead. I understand that
+tuples are implemented as nested pairs but this shouldn't disrupt my workflow.
+
 == Empty data should be fine
 
 [source, idris]
@@ -142,3 +148,8 @@ I took a look at `Prelude.Interfaces` and implementations if the `div` method
 don't handle the divide-by-zero case. How can this be prevented?
 I guess it is a very complicated issue.
 
+== No `import qualified`
+
+When you define a lot of functions that overlap with the
+imported module you wish you could do that. Is there a pattern with
+`namespace` that would provide the same advantage?
