@@ -113,6 +113,21 @@ Say I have a type `(Int, Int, Int)`. If a case split on a variable of this
 type, I get `(a, b)`. I'd like to have `(a, b, c)` instead. I understand that
 tuples are implemented as nested pairs but this shouldn't disrupt my workflow.
 
+=== Type of holes in where blocks
+
+Given this snippet:
+
+```idris
+five : Int
+five = two + three where
+  two : Int
+  two = ?two_rhs
+  three : Int
+  three = 3
+```
+
+This type-checks fine but I can't query the type of `?two_rhs`.
+
 == Empty data should be fine
 
 [source, idris]
