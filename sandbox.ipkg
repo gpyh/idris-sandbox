@@ -4,6 +4,6 @@ pkgs = contrib
 
 opts = "--warnreach"
 
-modules = Main, Graph
+modules = Main
 executable = main
 main = Main
