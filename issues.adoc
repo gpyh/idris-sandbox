@@ -12,6 +12,8 @@ christiansen about it. The absence of this feature is a matter of priorities.
 
 == Mutuality around an interface
 
+Reported at https://github.com/idris-lang/Idris-dev/issues/3168
+
 Consider this: 
 
 [source, idris]
@@ -41,7 +43,7 @@ interface MyInterface a where
   foo = bar
 ----
 
-Problem is, the order is messed up because bar depends on MyInterface.
+Problem is, the order is messed up because bar depends on `MyInterface`.
 
 Symmetrically:
 
@@ -55,9 +57,10 @@ bar : MyInterface a => a -> b
 bar : ?bar_rhs
 ----
 
-The dependency on `bar` makes it flawed.
+`foo` is trying to use the `bar` function that is not already defined. 
 
-How should I proceed?
+How such a problem would be solve?
+
 
 == Interactive editing
 
@@ -66,7 +69,8 @@ How should I proceed?
 Creating a lemma uses the whole scope to fetch arguments.
 Worse, if some are already there it adds them anyway.
 
-Maybe it should look at the intended type and leave new holes behind.
+Maybe it should look at the intended type and simply use it to lift the hole.
+
 Example:
 
 [source, idris]
@@ -75,14 +79,14 @@ foo : a -> b -> c
 foo x = ?bar
 ----
 
-`bar` is of type `a -> b -> c`. Creating a simple lemme would do:
+`bar` is of type `b -> c`. By doing a "simple lifting", we'd have:
 
 [source, idris]
 ----
-bar : a -> b -> c
+bar : b -> c
 
 foo : a -> b -> c
-foo x = bar ?arg1 ?arg2
+foo x = bar
 ----
 
 Going further, let's have:
@@ -97,21 +101,33 @@ Because x of type a, this could expand as:
 
 [source, idris]
 ----
-bar : a -> b -> c
+bar : (x : a) -> b -> c
 
 foo : a -> b -> c
-foo x = bar x ?arg1
+foo x = bar x
+----
+
+Instead of the current behavior
+
+[source, idris]
+----
+bar : (x : a) -> a -> b -> c
+
+foo : a -> b -> c
+foo x = bar x x
 ----
 
 === Definitions in interfaces
 
 Can't make an automatic definition of a function in an interface's `where` clause.
 
-=== Case on tuples
+=== Case splits on tuples
 
 Say I have a type `(Int, Int, Int)`. If a case split on a variable of this
-type, I get `(a, b)`. I'd like to have `(a, b, c)` instead. I understand that
-tuples are implemented as nested pairs but this shouldn't disrupt my workflow.
+type, I get `(a, b)`. I'd like to have `(a, b, c)` instead (although
+tuples are implemented as nested pairs).
+
+Tested with Atom and Vim.
 
 === Type of holes in where blocks
 
@@ -128,16 +144,21 @@ five = two + three where
 
 This type-checks fine but I can't query the type of `?two_rhs`.
 
-== Empty data should be fine
+== Empty datatype causes parser error
+
+This following snippet is a part of _Listing 6.6_ in
+_Type-driven development with Idris_ (MEAP v7).
 
 [source, idris]
 ----
-data Foo
+data Schema
 
-bar : a -> a
+SchemaType : Schema -> Type
 ----
 
-Syntax error in `:`
+It raises a syntax error in `:`.
+
+However, if the file ends with `data Schema` it compiles fine.
 
 == Can't use multiple holes sometimes
 
@@ -149,17 +170,40 @@ Can't define hole Ex6_3_8.case block in Ex6_3_8.interactiveInsert, processInput 
 t depends on other holes          
 ----
 
-== Type synonyms don't appear in type signatures
+== Type synonyms don't appear in queried type signatures
 
-If I use a type synonym (a function of type `Type`) in a signature
-and then ask for the type of the definition, the computed type.
+If I use a type synonym (a function of type `Type`) and then query the types
+in the context, only the computed type is displayed. 
 This is sensible, but hardly usable. The main uses of type synonyms are giving
 meaning to types and simplifying the type signatures. We can't take
 advantage of this when doing interactive editing.
 
+An example:
+
+[source, idris]
+----
+Point : Type
+Point = (Int, Int)
+
+Vector : Type
+Vector = (Int, Int)
+
+vectorFromTo : Point -> Point -> Vector
+vectorFromTo p1 p2 = ?hole p1 p2
+----
+
+If you query the type of `vectorFromTo` you rightfully get
+`Point -> Point -> Vector`. However, the type of the hole is
+`(Int, Int) -> (Int, Int) -> (Int, Int)`. Idris immediately compute the type
+before displaying it. It would be nice if it was able to know not to always
+evaluate functions that return a type for display purposes.
+The ideal setup would be to have both displayed, so you know the _meaning_
+and the _structure_ of what you're working with.
+
+
 == Integral methods allow division by zero
 
-I took a look at `Prelude.Interfaces` and implementations if the `div` method
+I took a look at `Prelude.Interfaces` and implementations of the `div` method
 don't handle the divide-by-zero case. How can this be prevented?
 I guess it is a very complicated issue.
 
