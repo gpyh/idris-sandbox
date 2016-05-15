@@ -7,6 +7,19 @@ Converting those in Idris?
 - How does Idris lay out things in memory? Is it predictable?
 - Haskell's UNPACK?
 
+== Jupyter
+
+A Jupyter kernel would fit the _interactive editing_ workflow of Idris.
+What's needed to implement one:
+
+- Good Jupyter documentation (duh!)
+- A ZeroMQ library, which needs...
+- IPv6 in Network.Socket and...
+- Bytestrings!
+
+A good plan first would be to revamp the IdrisNet2 library and IPv6 support
+in conjunction. After that the ZeroMQ API is trivial.
+
 == Self hosting
 
 - How would the compiler be bootstrapped?
