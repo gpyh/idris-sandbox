@@ -1,0 +1,74 @@
+= Idiomatic Idris
+
+== Making functions safer
+
+=== Return a sum type
+
+Return the result wrapped in a `Maybe`, `Either` or a custom `Functor`.
+Pattern matching on this allows to handle errors gracefully.
+
+Advantages::
+  - Very easy to do
+  - A `do` block allows to automatically unwrap the correct values ; the `|`
+can be used for error handling
+
+Disadvantages::
+  - It all happens at runtime
+
+When to use::
+  - When the function is expected to fail
+  - When you need to recover the errors in meaningful ways
+
+Examples in the standard library::
+  - `Prelude.List.init'`
+  - `Prelude.List.tail'`
+  - `Data.Vect.exactLength`
+
+=== Require a proof
+
+Create a proof type dependent on some input. Proofs should assert
+that the input has the right properties so the function never meets error
+cases.
+
+Advantages::
+  - All checked at compile time
+  - Makes the preconditions apparent in the signature
+  - Proofs can hold data that may be reused
+  - Can serve as views
+
+Disadvantages::
+  - You can't always prove something easily
+  - The code is not always clear
+
+When to use::
+  - When other exported functions provide the proofs
+  - When compile time guarantees are critical
+
+Examples in the standard library::
+  - `Data.Vect.Elem`
+  - `Data.List.InBounds`
+
+=== Put more data into the type
+
+If the correct inputs can easily be obtained via some data computable at
+compile time, you can make your type dependent on that data.
+
+Avantages::
+  - Inputs carry the proofs with them
+  - Type signatures are clear
+
+Disadvantages::
+  - The type will always carry the data, even when you don't care about it
+  - In complicated cases, it's possible to simply determine the type of the
+output, which would either cause:
+    * duplication of code ; you use a second function that will compute the
+data in the type, or
+    * losing guarantees when calling the function by not limiting the
+possible outputs
+  - Beware of erasure!
+
+Examples in the standard library::
+  - `Data.Vect.index`
+
+
+
