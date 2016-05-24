@@ -2,6 +2,10 @@
 
 Given by JanBessai on IRC. I guess it's Coq.
 
+"in my case the t parameter changed during recursion (it was an algebra thing,
+where t selects a sort and x is a carrier term of that sort)"
+-- JanBessai
+
 [source, coq]
 ----
 Section DependentFixPoint.
