@@ -1,0 +1,6 @@
+package sandbox
+
+modules = Main
+executable = main
+main = Main
+opts = "-p effects -p contrib" 

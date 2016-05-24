@@ -1,2 +1,11 @@
+# Work documents (unshareable)
+/docs/
+
+# Idris stuff
+*.idr~
 *.ibc
 *.o
+
+# Executable
+main
+main.c
